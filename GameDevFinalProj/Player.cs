@@ -55,5 +55,9 @@ namespace GameDevFinalProj
             Rectangle rectangle = new Rectangle(position.X * size, position.Y * size, size, size);
             spriteBatch.Draw(texture, rectangle, new Color(255, 165, 0)); // ?
         }
+        public Point GetPosition()
+        {
+            return position;
+        }
     }
 }
