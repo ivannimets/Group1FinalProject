@@ -13,6 +13,7 @@ namespace GameDevFinalProj
         private SpriteBatch _spriteBatch;
         private Map _map;
         private Player _player;
+        private Enemy _enemy;
 
         private Texture2D[] _img;
         private Random _rnd;
@@ -45,6 +46,7 @@ namespace GameDevFinalProj
 
             _map = new Map(cols, rows, size, GraphicsDevice);
             _player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
+            _enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
 
             _rnd = new Random();
             base.Initialize();
@@ -82,6 +84,7 @@ namespace GameDevFinalProj
                 Exit();
 
             _player.Update();
+            _enemy.Update(_player.GetPosition(), gameTime);
 
             base.Update(gameTime);
         }
@@ -113,6 +116,7 @@ namespace GameDevFinalProj
             _spriteBatch.Begin();
             _map.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
+            _enemy.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
