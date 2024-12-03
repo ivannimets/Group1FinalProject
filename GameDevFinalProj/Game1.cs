@@ -14,6 +14,7 @@ namespace GameDevFinalProj
         private Map _map;
         private Player _player;
         private Enemy _enemy;
+        private Pickups _pickups;
 
         private Texture2D[] _img;
         private Random _rnd;
@@ -47,6 +48,7 @@ namespace GameDevFinalProj
             _map = new Map(cols, rows, size, GraphicsDevice);
             _player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
             _enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
+            _pickups = new Pickups(cols, rows, size, GraphicsDevice);
 
             _rnd = new Random();
             base.Initialize();
@@ -76,7 +78,6 @@ namespace GameDevFinalProj
                 {
                     start = false;
                 }
-
                 return;
             }
 
@@ -85,6 +86,12 @@ namespace GameDevFinalProj
 
             _player.Update();
             _enemy.Update(_player.GetPosition(), gameTime);
+            if(GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
+            {
+                // GameOver(); IMPLEMENT THIS
+                Exit();
+            }
+            
 
             base.Update(gameTime);
         }
@@ -117,7 +124,9 @@ namespace GameDevFinalProj
             _map.Draw(_spriteBatch);
             _player.Draw(_spriteBatch);
             _enemy.Draw(_spriteBatch);
+            _pickups.Draw(_spriteBatch);
             _spriteBatch.End();
+            
 
             base.Draw(gameTime);
         }
