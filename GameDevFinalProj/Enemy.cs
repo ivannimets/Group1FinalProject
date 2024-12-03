@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static System.Collections.Specialized.BitVector32;
 
 namespace GameDevFinalProj
 {
@@ -33,22 +34,27 @@ namespace GameDevFinalProj
                 elapsedTime = 0;
 
                 // Perform movement logic
-                if (direction)
+                if (direction && position.X != playerPosition.X)
                 {
                     position.X += playerPosition.X > position.X ? 1 : -1;
-                    direction = false;
                 }
-                else
+                direction = false;                
+                if (position.Y != playerPosition.Y)
                 {
                     position.Y += playerPosition.Y > position.Y ? 1 : -1;
-                    direction = true;
+                    
                 }
+                direction = true;
             }
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             Rectangle rectangle = new Rectangle(position.X * size, position.Y * size, size, size);
             spriteBatch.Draw(texture, rectangle, new Color(0, 0, 0)); // ?
+        }
+        public Point GetPosition()
+        {
+            return position;
         }
     }
 }
