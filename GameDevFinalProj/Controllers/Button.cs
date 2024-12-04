@@ -20,10 +20,6 @@ namespace GameDevFinalProj.Controllers
 
 		public void Draw(int screenWidth, int screenHeight, SpriteBatch spriteBatch)
 		{
-			_position = new System.Numerics.Vector2(
-					(screenWidth - _activeTexture.Width) / 2,
-					(screenHeight - _activeTexture.Height) / 2
-				);
 			spriteBatch.Draw(_activeTexture, new Microsoft.Xna.Framework.Rectangle((int)_position.X, (int)_position.Y, _activeTexture.Width, _activeTexture.Height), Microsoft.Xna.Framework.Color.White);
 		}
 	}
