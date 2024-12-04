@@ -7,12 +7,16 @@ using System.Numerics;
 using GameDevFinalProj.Screens.Game;
 using GameDevFinalProj.Screens.StartGameMenu;
 using GameDevFinalProj.Screens.EndGameMenu;
+using GameDevFinalProj.Screens.PauseGameScreen;
+using GameDevFinalProj.Screens.OptionsScreen;
 
 namespace GameDevFinalProj
 {
 	public class Game1 : Game
     {
         public ScreenConditions _activeScreen;
+
+        public bool leftMouseButtonPressed;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -33,10 +37,23 @@ namespace GameDevFinalProj
         public int size;
 
         private PlayButton _playButton;
+        private OptionsButton _optionsButton;
+        private ExitButton _exitButton;
 
         // End Screen
 
         private RestartButton _restartButton;
+
+        // PauseScreen
+
+        private ContinueButton _continueButton;
+
+        // OptionsScreen
+
+        private BackButton _backButton;
+        private SoundButton _soundButton;
+
+
 
 
 
@@ -50,10 +67,12 @@ namespace GameDevFinalProj
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _rnd = idk.HasValue ? new Random(idk.Value) : new Random();
-        }
+		}
 
         protected override void Initialize()
         {
+            leftMouseButtonPressed = false;
+
 			// Screen
 			screenWidth = 960;
 			screenHeight = 540;
@@ -70,11 +89,22 @@ namespace GameDevFinalProj
 
             //Start Screen
             _playButton = new PlayButton(this);
+            _optionsButton = new OptionsButton(this);
+            _exitButton = new ExitButton(this);
 
             //End Screen
             _restartButton = new RestartButton(this);
 
-			_activeScreen = ScreenConditions.StartGameMenu;
+			// PauseScreen
+
+		    _continueButton = new ContinueButton(this);
+
+		    // OptionsScreen
+
+		    _backButton = new BackButton(this);
+		    _soundButton = new SoundButton(this);
+
+		    _activeScreen = ScreenConditions.StartGameMenu;
 
 			_rnd = new Random();
             base.Initialize();
@@ -97,29 +127,49 @@ namespace GameDevFinalProj
         {
             if (_activeScreen == ScreenConditions.StartGameMenu)
             {
-                _playButton.Update(this);
+				IsMouseVisible = true;
+				_playButton.Update(this);
+                _optionsButton.Update(this);
+                _exitButton.Update(this);
 			}
             if (_activeScreen == ScreenConditions.Game)
 			{
 				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-					Exit();
+                {
+                    _activeScreen = ScreenConditions.PauseMenu;
+                    leftMouseButtonPressed = false;
+                    return;
+                }
 
 				_player.Update();
 				_enemy.Update(_player.GetPosition(), gameTime);
 				if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
 				{
-                    // GameOver(); IMPLEMENT THIS
+					// GameOver(); IMPLEMENT THIS
+					leftMouseButtonPressed = false;
                     _activeScreen = ScreenConditions.EndGameMenu;
 				}
 			}
 			if (_activeScreen == ScreenConditions.PauseMenu)
 			{
-
+				IsMouseVisible = true;
+				_continueButton.Update(this);
+                _exitButton.Update(this);
+                _optionsButton.Update(this);
 			}
 			if (_activeScreen == ScreenConditions.EndGameMenu)
 			{
-                _restartButton.Update(this);
+				IsMouseVisible = true;
+				_restartButton.Update(this);
+                _exitButton.Update(this);
 			}
+            if (_activeScreen == ScreenConditions.OptionsMenu)
+            {
+				IsMouseVisible = true;
+				_soundButton.Update(this);
+                _backButton.Update(this);
+                _exitButton.Update(this);
+            }
             
 
             base.Update(gameTime);
@@ -136,16 +186,18 @@ namespace GameDevFinalProj
                 _map.Draw(_spriteBatch); // ?
 
                 _playButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _exitButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _optionsButton.Draw(screenWidth, screenHeight, _spriteBatch);
 
-                //Texture2D i = _img[3]; // _img[_i]
-                //System.Numerics.Vector2 pos = new System.Numerics.Vector2(
-                //    (GraphicsDevice.Viewport.Width - 626) / 2,
-                //    (GraphicsDevice.Viewport.Height - 212) / 2
-                //);
+				//Texture2D i = _img[3]; // _img[_i]
+				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
+				//    (GraphicsDevice.Viewport.Width - 626) / 2,
+				//    (GraphicsDevice.Viewport.Height - 212) / 2
+				//);
 
-                //_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
+				//_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
 
-                _spriteBatch.End();
+				_spriteBatch.End();
             }
             if (_activeScreen == ScreenConditions.Game)
             {
@@ -168,6 +220,51 @@ namespace GameDevFinalProj
 				_map.Draw(_spriteBatch); // ?
 
 				_restartButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _exitButton.Draw(screenWidth, screenHeight, _spriteBatch);
+
+				//Texture2D i = _img[3]; // _img[_i]
+				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
+				//    (GraphicsDevice.Viewport.Width - 626) / 2,
+				//    (GraphicsDevice.Viewport.Height - 212) / 2
+				//);
+
+				//_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
+
+				_spriteBatch.End();
+			}
+			if (_activeScreen == ScreenConditions.OptionsMenu)
+			{
+				GraphicsDevice.Clear(Color.Transparent);
+
+				_spriteBatch.Begin();
+
+				_map.Draw(_spriteBatch); // ?
+
+                _soundButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _backButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _exitButton.Draw(screenWidth, screenHeight, _spriteBatch);
+
+				//Texture2D i = _img[3]; // _img[_i]
+				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
+				//    (GraphicsDevice.Viewport.Width - 626) / 2,
+				//    (GraphicsDevice.Viewport.Height - 212) / 2
+				//);
+
+				//_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
+
+				_spriteBatch.End();
+			}
+			if (_activeScreen == ScreenConditions.PauseMenu)
+			{
+				GraphicsDevice.Clear(Color.Transparent);
+
+				_spriteBatch.Begin();
+
+				_map.Draw(_spriteBatch); // ?
+
+				_continueButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _exitButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                _optionsButton.Draw(screenWidth, screenHeight, _spriteBatch);
 
 				//Texture2D i = _img[3]; // _img[_i]
 				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
@@ -198,5 +295,6 @@ namespace GameDevFinalProj
 		Game,
 		EndGameMenu,
 		PauseMenu,
+        OptionsMenu,
 	}
 }
