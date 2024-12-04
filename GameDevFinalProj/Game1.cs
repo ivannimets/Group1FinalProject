@@ -4,11 +4,15 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using static System.Net.Mime.MediaTypeNames;
 using System.Numerics;
+using GameDevFinalProj.Screens.Game;
+using GameDevFinalProj.Screens.StartGameMenu;
 
 namespace GameDevFinalProj
 {
-    public class Game1 : Game
+	public class Game1 : Game
     {
+        public ScreenConditions _activeScreen;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Map _map;
@@ -20,28 +24,35 @@ namespace GameDevFinalProj
         private Random _rnd;
         private int _i;
 
-        private bool start = true;
+        // Start Screen
+        private int screenWidth;
+        private int screenHeight;
+        private PlayButton _playButton;
+
+
+
+
+
 
         public Game1(int? idk = null) // Seed
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = false;
-
+            IsMouseVisible = true;
             _rnd = idk.HasValue ? new Random(idk.Value) : new Random();
         }
 
         protected override void Initialize()
         {
-            // Screen
-            int width = 960;
-            int height = 540;
+			// Screen
+			screenWidth = 960;
+			screenHeight = 540;
 
-            int cols = 15;
-            int rows = 9;
-            int size = width / cols;
+            int cols = 20;
+            int rows = 11;
+            int size = screenWidth / cols;
 
-            _graphics.PreferredBackBufferWidth = width;
+            _graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.PreferredBackBufferHeight = size * rows;
             _graphics.ApplyChanges();
 
@@ -50,7 +61,12 @@ namespace GameDevFinalProj
             _enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
             _pickups = new Pickups(cols, rows, size, GraphicsDevice);
 
-            _rnd = new Random();
+            //Start Screen
+            _playButton = new PlayButton(this);
+
+			_activeScreen = ScreenConditions.StartGameMenu;
+
+			_rnd = new Random();
             base.Initialize();
         }
 
@@ -69,28 +85,35 @@ namespace GameDevFinalProj
 
         protected override void Update(GameTime gameTime)
         {
-            if (start)
+            if (_activeScreen == ScreenConditions.StartGameMenu)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    Exit();
+                _playButton.Update(this);
+				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+					Exit();
+				return;
+			}
+            if (_activeScreen == ScreenConditions.Game)
+			{
+				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+					Exit();
 
-                if (Keyboard.GetState().GetPressedKeys().Length > 0)
-                {
-                    start = false;
-                }
+				_player.Update();
+				_enemy.Update(_player.GetPosition(), gameTime);
+				if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
+				{
+					// GameOver(); IMPLEMENT THIS
+					Exit();
+				}
                 return;
-            }
+			}
+			if (_activeScreen == ScreenConditions.PauseMenu)
+			{
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+			}
+			if (_activeScreen == ScreenConditions.EndGameMenu)
+			{
 
-            _player.Update();
-            _enemy.Update(_player.GetPosition(), gameTime);
-            if(GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
-            {
-                // GameOver(); IMPLEMENT THIS
-                Exit();
-            }
+			}
             
 
             base.Update(gameTime);
@@ -98,7 +121,7 @@ namespace GameDevFinalProj
 
         protected override void Draw(GameTime gameTime)
         {
-            if (start)
+            if (_activeScreen == ScreenConditions.StartGameMenu)
             {
                 GraphicsDevice.Clear(Color.Transparent);
 
@@ -106,29 +129,40 @@ namespace GameDevFinalProj
 
                 _map.Draw(_spriteBatch); // ?
 
-                Texture2D i = _img[3]; // _img[_i]
-                System.Numerics.Vector2 pos = new System.Numerics.Vector2(
-                    (GraphicsDevice.Viewport.Width - 626) / 2,
-                    (GraphicsDevice.Viewport.Height - 212) / 2
-                );
+                _playButton.Draw(screenWidth, screenHeight, _spriteBatch);
 
-                _spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
+                //Texture2D i = _img[3]; // _img[_i]
+                //System.Numerics.Vector2 pos = new System.Numerics.Vector2(
+                //    (GraphicsDevice.Viewport.Width - 626) / 2,
+                //    (GraphicsDevice.Viewport.Height - 212) / 2
+                //);
+
+                //_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
 
                 _spriteBatch.End();
-                return;
             }
+			if (_activeScreen == ScreenConditions.Game)
+            {
 
-            GraphicsDevice.Clear(Color.Transparent);
+				GraphicsDevice.Clear(Color.Transparent);
 
-            _spriteBatch.Begin();
-            _map.Draw(_spriteBatch);
-            _player.Draw(_spriteBatch);
-            _enemy.Draw(_spriteBatch);
-            _pickups.Draw(_spriteBatch);
-            _spriteBatch.End();
+				_spriteBatch.Begin();
+				_map.Draw(_spriteBatch);
+				_player.Draw(_spriteBatch);
+				_enemy.Draw(_spriteBatch);
+				_pickups.Draw(_spriteBatch);
+				_spriteBatch.End();
+			}
             
-
             base.Draw(gameTime);
         }
-    }
+	}
+
+	public enum ScreenConditions
+	{
+		StartGameMenu,
+		Game,
+		EndGameMenu,
+		PauseMenu,
+	}
 }
