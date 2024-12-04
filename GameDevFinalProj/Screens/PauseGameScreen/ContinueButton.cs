@@ -1,17 +1,20 @@
 ﻿using GameDevFinalProj.Controllers;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
-using System.Drawing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace GameDevFinalProj.Screens.StartGameMenu
+namespace GameDevFinalProj.Screens.PauseGameScreen
 {
-	internal class PlayButton : Button
+	internal class ContinueButton : Button
 	{
-		public PlayButton(Game1 parent)
+		public ContinueButton(Game1 parent)
 		{
-			_texture = parent.Content.Load<Texture2D>("Play Button");
-			_textureHovered = parent.Content.Load<Texture2D>("Play Button Hover");
+			_texture = parent.Content.Load<Texture2D>("Continue Button");
+			_textureHovered = parent.Content.Load<Texture2D>("Continue Button Hover");
 			_activeTexture = _texture;
 			_position = new System.Numerics.Vector2(
 					(parent.screenWidth - _activeTexture.Width) / 2,
@@ -28,7 +31,6 @@ namespace GameDevFinalProj.Screens.StartGameMenu
 				{
 					parent._activeScreen = ScreenConditions.Game;
 					parent.IsMouseVisible = false;
-					parent.InitialiseGameScreen();
 					parent.leftMouseButtonPressed = true;
 				}
 			}

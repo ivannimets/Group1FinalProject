@@ -7,18 +7,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameDevFinalProj.Screens.EndGameMenu
+namespace GameDevFinalProj.Screens.OptionsScreen
 {
-	internal class RestartButton : Button
+	internal class SoundButton : Button
 	{
-		public RestartButton(Game1 parent)
+		public Texture2D _textureOff;
+		public Texture2D _textureOffHovered;
+		public Texture2D _textureOn;
+		public Texture2D _textureOnHovered;
+
+		public SoundButton(Game1 parent)
 		{
-			_texture = parent.Content.Load<Texture2D>("Restart Button");
-			_textureHovered = parent.Content.Load<Texture2D>("Restart Button Hover");
+			_textureOn = parent.Content.Load<Texture2D>("Sound On Button");
+			_textureOnHovered = parent.Content.Load<Texture2D>("Sound On Button Hover");
+			_textureOff = parent.Content.Load<Texture2D>("Sound Off Button");
+			_textureOffHovered = parent.Content.Load<Texture2D>("Sound Off Button Hover");
+			_texture = _textureOn;
+			_textureHovered = _textureOnHovered;
 			_activeTexture = _texture;
 			_position = new System.Numerics.Vector2(
 					(parent.screenWidth - _activeTexture.Width) / 2,
-					(parent.screenHeight - _activeTexture.Height) / 2
+					(parent.screenHeight - _activeTexture.Height) / 3
 				);
 		}
 		public void Update(Game1 parent)
@@ -29,9 +38,16 @@ namespace GameDevFinalProj.Screens.EndGameMenu
 				_activeTexture = _textureHovered;
 				if (ms.LeftButton == ButtonState.Pressed && parent.leftMouseButtonPressed == false)
 				{
-					parent._activeScreen = ScreenConditions.Game;
-					parent.IsMouseVisible = false;
-					parent.InitialiseGameScreen();
+					if (_texture == _textureOn)
+					{
+						_texture = _textureOff;
+						_textureHovered = _textureOffHovered;
+					}
+					else
+					{
+						_texture = _textureOn;
+						_textureHovered = _textureOnHovered;
+					}
 					parent.leftMouseButtonPressed = true;
 				}
 			}
