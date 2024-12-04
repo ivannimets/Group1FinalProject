@@ -6,6 +6,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Numerics;
 using GameDevFinalProj.Screens.Game;
 using GameDevFinalProj.Screens.StartGameMenu;
+using GameDevFinalProj.Screens.EndGameMenu;
 
 namespace GameDevFinalProj
 {
@@ -25,9 +26,18 @@ namespace GameDevFinalProj
         private int _i;
 
         // Start Screen
-        private int screenWidth;
-        private int screenHeight;
+        public int screenWidth;
+        public int screenHeight;
+        public int cols;
+        public int rows;
+        public int size;
+
         private PlayButton _playButton;
+
+        // End Screen
+
+        private RestartButton _restartButton;
+
 
 
 
@@ -47,22 +57,22 @@ namespace GameDevFinalProj
 			// Screen
 			screenWidth = 960;
 			screenHeight = 540;
+			cols = 20;
+			rows = 11;
+			size = screenWidth / cols;
 
-            int cols = 20;
-            int rows = 11;
-            int size = screenWidth / cols;
-
-            _graphics.PreferredBackBufferWidth = screenWidth;
+			_graphics.PreferredBackBufferWidth = screenWidth;
             _graphics.PreferredBackBufferHeight = size * rows;
             _graphics.ApplyChanges();
 
             _map = new Map(cols, rows, size, GraphicsDevice);
-            _player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
-            _enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
-            _pickups = new Pickups(cols, rows, size, GraphicsDevice);
+            InitialiseGameScreen();
 
             //Start Screen
             _playButton = new PlayButton(this);
+
+            //End Screen
+            _restartButton = new RestartButton(this);
 
 			_activeScreen = ScreenConditions.StartGameMenu;
 
@@ -88,9 +98,6 @@ namespace GameDevFinalProj
             if (_activeScreen == ScreenConditions.StartGameMenu)
             {
                 _playButton.Update(this);
-				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-					Exit();
-				return;
 			}
             if (_activeScreen == ScreenConditions.Game)
 			{
@@ -101,10 +108,9 @@ namespace GameDevFinalProj
 				_enemy.Update(_player.GetPosition(), gameTime);
 				if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
 				{
-					// GameOver(); IMPLEMENT THIS
-					Exit();
+                    // GameOver(); IMPLEMENT THIS
+                    _activeScreen = ScreenConditions.EndGameMenu;
 				}
-                return;
 			}
 			if (_activeScreen == ScreenConditions.PauseMenu)
 			{
@@ -112,7 +118,7 @@ namespace GameDevFinalProj
 			}
 			if (_activeScreen == ScreenConditions.EndGameMenu)
 			{
-
+                _restartButton.Update(this);
 			}
             
 
@@ -141,21 +147,49 @@ namespace GameDevFinalProj
 
                 _spriteBatch.End();
             }
-			if (_activeScreen == ScreenConditions.Game)
+            if (_activeScreen == ScreenConditions.Game)
             {
 
+                GraphicsDevice.Clear(Color.Transparent);
+
+                _spriteBatch.Begin();
+                _map.Draw(_spriteBatch);
+                _player.Draw(_spriteBatch);
+                _enemy.Draw(_spriteBatch);
+                _pickups.Draw(_spriteBatch);
+                _spriteBatch.End();
+            }
+			if (_activeScreen == ScreenConditions.EndGameMenu)
+			{
 				GraphicsDevice.Clear(Color.Transparent);
 
 				_spriteBatch.Begin();
-				_map.Draw(_spriteBatch);
-				_player.Draw(_spriteBatch);
-				_enemy.Draw(_spriteBatch);
-				_pickups.Draw(_spriteBatch);
+
+				_map.Draw(_spriteBatch); // ?
+
+				_restartButton.Draw(screenWidth, screenHeight, _spriteBatch);
+
+				//Texture2D i = _img[3]; // _img[_i]
+				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
+				//    (GraphicsDevice.Viewport.Width - 626) / 2,
+				//    (GraphicsDevice.Viewport.Height - 212) / 2
+				//);
+
+				//_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
+
 				_spriteBatch.End();
 			}
-            
-            base.Draw(gameTime);
+			base.Draw(gameTime);
         }
+
+
+        public void InitialiseGameScreen()
+        {
+
+			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
+			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
+			_pickups = new Pickups(cols, rows, size, GraphicsDevice);
+		}
 	}
 
 	public enum ScreenConditions
