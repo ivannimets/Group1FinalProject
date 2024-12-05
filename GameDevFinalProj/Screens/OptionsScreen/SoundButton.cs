@@ -42,9 +42,11 @@ namespace GameDevFinalProj.Screens.OptionsScreen
 					{
 						_texture = _textureOff;
 						_textureHovered = _textureOffHovered;
+						parent.SoundOn = false;
 					}
 					else
 					{
+						parent.SoundOn = true;
 						_texture = _textureOn;
 						_textureHovered = _textureOnHovered;
 					}
