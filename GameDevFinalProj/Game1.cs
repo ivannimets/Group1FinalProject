@@ -21,29 +21,7 @@ namespace GameDevFinalProj
 
         int Frame;
 
-        Texture2D PlayerUp1Sprite;
-        Texture2D PlayerUp2Sprite;
-
-        Texture2D PlayerDown1Sprite;
-        Texture2D PlayerDown2Sprite;
-
-        Texture2D PlayerLeft1Sprite;
-        Texture2D PlayerLeft2Sprite;
-
-        Texture2D PlayerRight1Sprite;
-        Texture2D PlayerRight2Sprite;
-
-        Texture2D EnemyUp1Sprite;
-        Texture2D EnemyUp2Sprite;
-
-        Texture2D EnemyDown1Sprite;
-        Texture2D EnemyDown2Sprite;
-
-        Texture2D EnemyLeft1Sprite;
-        Texture2D EnemyLeft2Sprite;
-
-        Texture2D EnemyRight1Sprite;
-        Texture2D EnemyRight2Sprite;
+        
 
 
         private GraphicsDeviceManager _graphics;
@@ -144,6 +122,9 @@ namespace GameDevFinalProj
             _img[3] = Content.Load<Texture2D>("Img");
 
             _i = _rnd.Next(_img.Length);
+
+        
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -236,36 +217,13 @@ namespace GameDevFinalProj
                 _player.Draw(_spriteBatch);
                 _enemy.Draw(_spriteBatch);
                 _pickups.Draw(_spriteBatch);
+
+               
+
                 _spriteBatch.End();
 
-                if (_player.Frame == 0)
-                {
-                    if (_player.Direction == 0)
-                    {
-                        _spriteBatch.Draw(PlayerUp1Sprite, new System.Numerics.Vector2(_player.position.X, _player.position.Y), Color.White);
-                    }
-
-                    if (_player.Direction == 1)
-                    {
-
-                    }
-
-                    if (_player.Direction == 2)
-                    {
-
-                    }
-
-                    if (_player.Direction == 3)
-                    {
-
-                    }
-
-                }
-
-                if (_player.Frame == 1)
-                {
-
-                }
+           
+               
 
             }
 			if (_activeScreen == ScreenConditions.EndGameMenu)
@@ -340,8 +298,8 @@ namespace GameDevFinalProj
         public void InitialiseGameScreen()
         {
 
-			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
-			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
+			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice, this); // Center
+			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice, this);
 			_pickups = new Pickups(cols, rows, size, GraphicsDevice);
 		}
 	}
