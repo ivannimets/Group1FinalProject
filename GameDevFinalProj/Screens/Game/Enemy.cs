@@ -50,38 +50,59 @@ namespace GameDevFinalProj.Screens.Game
             random = new Random();
 
             texture = new Texture2D(graphics, 1, 1);
-			texture.SetData(new[] { Color.Black }); // ?
 		}
 
 		public void Update(Point playerPosition, GameTime gameTime)
 		{
-			if (!IsAlive)
-			{
+            if (!IsAlive)
+            {
                 Respawn(playerPosition); // Respawn IF NOT Alive & Check Player's Position FOR Respawnin'
                 return;
-			}
+            }
 
             // Update elapsed time
             elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-			if (elapsedTime >= moveDelay)
-			{
-				// Reset the timer
-				elapsedTime = 0;
+            if (elapsedTime >= moveDelay)
+            {
+                // Reset the timer
+                elapsedTime = 0;
 
-				// Perform movement logic
-				if (direction && position.X != playerPosition.X)
-				{
-					position.X += playerPosition.X > position.X ? 1 : -1;
-				}
-				direction = false;
-				if (position.Y != playerPosition.Y)
-				{
-					position.Y += playerPosition.Y > position.Y ? 1 : -1;
+                // Perform movement logic
+                if (direction && position.X != playerPosition.X)
+                {
+                    if (playerPosition.X > position.X)
+                    {
+                        position.X += 1;
+                        EnemyDirection = 3; // Right
+                    }
+                    else
+                    {
+                        position.X -= 1;
+                        EnemyDirection = 2; // Left
+                    }
+                }
 
-				}
-				direction = true;
-			}
+                direction = false; // Alternate movement to Y-axis
+                if (position.Y != playerPosition.Y)
+                {
+                    if (playerPosition.Y > position.Y)
+                    {
+                        position.Y += 1;
+                        EnemyDirection = 1; // Down
+                    }
+                    else
+                    {
+                        position.Y -= 1;
+                        EnemyDirection = 0; // Up
+                    }
+                }
+
+                direction = true; // Alternate movement back to X-axis
+
+                // Toggle the animation frame for the sprite
+                Frame = Frame == 0 ? 1 : 0;
+            }
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -89,7 +110,6 @@ namespace GameDevFinalProj.Screens.Game
             if (IsAlive)
             {
                 Rectangle rectangle = new Rectangle(position.X * size, position.Y * size, size, size);
-                spriteBatch.Draw(texture, rectangle, Color.Black); // ?
 
                 if (Frame == 0)
                 {
