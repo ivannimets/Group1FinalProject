@@ -15,7 +15,7 @@ namespace GameDevFinalProj.Screens.Game
 		private Texture2D texture;
 		private bool direction = true; //this flips the x and y direction for the enemy movement
 		private float elapsedTime;
-		private float moveDelay = 0.5f;
+		public float moveDelay = 0.5f;
         private Random random; // NEW Spawn(s)
 
         private Texture2D EUp1;
