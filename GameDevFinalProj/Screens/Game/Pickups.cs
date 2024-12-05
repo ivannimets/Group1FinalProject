@@ -13,12 +13,11 @@ namespace GameDevFinalProj.Screens.Game
         private bool isAlive = true;
         private Random random = new Random();
 
-        public Pickups(int col, int rows, int tSize, GraphicsDevice graphics)
+        public Pickups(int col, int rows, int tSize, GraphicsDevice graphics, Game1 parent)
         {
             size = tSize;
             Respawn(new Point(col / 2, rows / 2), col, rows); // Random
-            texture = new Texture2D(graphics, 1, 1);
-            texture.SetData(new[] { new Color(255, 0, 0) }); // ?
+            texture = parent.Content.Load<Texture2D>("BM-1");
         }
 
         public void Respawn(Point playerPosition, int col, int rows)
@@ -42,22 +41,22 @@ namespace GameDevFinalProj.Screens.Game
             return x <= 3 && y <= 3; // WITHIN 3 Tile(s)
         }
 
-        public void CheckCollision(Player player, List<Enemy> enemies, int col, int rows)
+        public bool CheckCollision(Player player, List<Enemy> enemies, int col, int rows)
         {
             // Check IF Player & Powerup Collide
             if (isAlive && player.GetPosition() == position)
             {
-                // KILL ALL Enemy
-                foreach (var enemy in enemies)
-                {
-                    enemy.IsAlive = false;
-                }
-
-                // Respawn Powerup
-                Respawn(player.GetPosition(), col, rows);
+                return true;
+            }
+            return false;
+        }
+        public void Kill(List<Enemy> enemies)
+        {
+            foreach (var enemy in enemies)
+            {
+                enemy.IsAlive = false;
             }
         }
-
         public void Draw(SpriteBatch spriteBatch)
         {
             if (isAlive)

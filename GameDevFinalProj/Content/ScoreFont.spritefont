@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns="http://www.microsoft.com/xna/framework/content/compile">
+  <Asset Type="Microsoft.Xna.Framework.Content.Pipeline.Graphics.FontDescription">
+    <FontName>Impact</FontName>
+    <Size>36</Size> <!-- Bigger and bolder -->
+    <Spacing>1</Spacing>
+    <UseKerning>true</UseKerning>
+    <Style>Bold</Style> <!-- Ensures it's bold -->
+    <CharacterRegions>
+      <CharacterRegion>
+        <Start> </Start>
+        <End>~</End>
+      </CharacterRegion>
+    </CharacterRegions>
+  </Asset>
+</XnaContent>

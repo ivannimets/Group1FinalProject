@@ -21,15 +21,14 @@ namespace GameDevFinalProj
 
         int Frame;
 
-        
-
-
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Map _map;
         private Player _player;
         private Enemy _enemy;
         private Pickups _pickups;
+
+        public int score = 0;
 
         private Texture2D[] _img;
         private Random _rnd;
@@ -46,6 +45,8 @@ namespace GameDevFinalProj
         private OptionsButton _optionsButton;
         private ExitButton _exitButton;
 
+        private SpriteFont _font;
+
         // End Screen
 
         private RestartButton _restartButton;
@@ -58,6 +59,7 @@ namespace GameDevFinalProj
 
         private BackButton _backButton;
         private SoundButton _soundButton;
+
 
         public Game1(int? idk = null) // Seed
         {
@@ -115,6 +117,8 @@ namespace GameDevFinalProj
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            _font = Content.Load<SpriteFont>("ScoreFont");
+
             _img = new Texture2D[4];
             _img[0] = Content.Load<Texture2D>("Uno");
             _img[1] = Content.Load<Texture2D>("Due");
@@ -156,7 +160,14 @@ namespace GameDevFinalProj
 				}
 
                 // Player & Pickup Collision
-                _pickups.CheckCollision(_player, new List<Enemy> { _enemy }, cols, rows);
+                if (_pickups.CheckCollision(_player, new List<Enemy> { _enemy }, cols, rows))
+                {
+                    // KILL ALL Enemy
+                    _pickups.Kill(new List<Enemy> { _enemy });
+                    score += 1; // increment Score
+                    // Respawn Powerup
+                    _pickups.Respawn(_player.GetPosition(), cols, rows);
+                }
             }
 			if (_activeScreen == ScreenConditions.PauseMenu)
 			{
@@ -217,8 +228,8 @@ namespace GameDevFinalProj
                 _player.Draw(_spriteBatch);
                 _enemy.Draw(_spriteBatch);
                 _pickups.Draw(_spriteBatch);
+                _spriteBatch.DrawString(_font, $"Score: {score}", new Microsoft.Xna.Framework.Vector2(10, 10), Color.White);
 
-               
 
                 _spriteBatch.End();
 
@@ -300,7 +311,7 @@ namespace GameDevFinalProj
 
 			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice, this); // Center
 			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice, this);
-			_pickups = new Pickups(cols, rows, size, GraphicsDevice);
+			_pickups = new Pickups(cols, rows, size, GraphicsDevice, this);
 		}
 	}
 
