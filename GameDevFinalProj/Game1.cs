@@ -10,6 +10,7 @@ using GameDevFinalProj.Screens.EndGameMenu;
 using GameDevFinalProj.Screens.PauseGameScreen;
 using GameDevFinalProj.Screens.OptionsScreen;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GameDevFinalProj
 {
@@ -27,8 +28,7 @@ namespace GameDevFinalProj
         private Player _player;
         private Enemy _enemy;
         private Pickups _pickups;
-
-        public int score = 0;
+        private PostGameStats postGameStats;
 
         private Texture2D[] _img;
         private Random _rnd;
@@ -60,6 +60,9 @@ namespace GameDevFinalProj
         private BackButton _backButton;
         private SoundButton _soundButton;
 
+        //sounds
+        private SoundEffect bombPickupSound;
+        private SoundEffect gameoverSound;
 
         public Game1(int? idk = null) // Seed
         {
@@ -118,7 +121,9 @@ namespace GameDevFinalProj
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _font = Content.Load<SpriteFont>("ScoreFont");
-
+            postGameStats = new PostGameStats(_font);
+            bombPickupSound = Content.Load<SoundEffect>("8bit_bomb_explosion");
+            gameoverSound = Content.Load<SoundEffect>("losetrumpet");
             _img = new Texture2D[4];
             _img[0] = Content.Load<Texture2D>("Uno");
             _img[1] = Content.Load<Texture2D>("Due");
@@ -141,35 +146,38 @@ namespace GameDevFinalProj
                 _exitButton.Update(this);
 			}
             else if (_activeScreen == ScreenConditions.Game)
-			{
-				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 {
                     _activeScreen = ScreenConditions.PauseMenu;
                     leftMouseButtonPressed = false;
                     return;
                 }
 
-				_player.Update();
-				_enemy.Update(_player.GetPosition(), gameTime);
+                _player.Update();
+                _enemy.Update(_player.GetPosition(), gameTime);
 
-				if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
-				{
-					// GameOver(); IMPLEMENT THIS
-					leftMouseButtonPressed = false;
+                // Update PostGameStats timer
+                postGameStats.Update(gameTime, gameOverCondition: false);
+
+                // Check collision with enemy
+                if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
+                {
+                    gameoverSound.Play();
+                    postGameStats.Update(gameTime, gameOverCondition: true); // Mark game over
                     _activeScreen = ScreenConditions.EndGameMenu;
-				}
+                }
 
                 // Player & Pickup Collision
                 if (_pickups.CheckCollision(_player, new List<Enemy> { _enemy }, cols, rows))
                 {
-                    // KILL ALL Enemy
+                    bombPickupSound.Play();
                     _pickups.Kill(new List<Enemy> { _enemy });
-                    score += 1; // increment Score
-                    // Respawn Powerup
+                    postGameStats.AddScore(1); // Increment score via PostGameStats
                     _pickups.Respawn(_player.GetPosition(), cols, rows);
                 }
             }
-			if (_activeScreen == ScreenConditions.PauseMenu)
+            if (_activeScreen == ScreenConditions.PauseMenu)
 			{
 				IsMouseVisible = true;
 				_continueButton.Update(this);
@@ -181,7 +189,16 @@ namespace GameDevFinalProj
 				IsMouseVisible = true;
 				_restartButton.Update(this);
                 _exitButton.Update(this);
-			}
+
+                if (_restartButton.IsPressed)
+                {
+                    postGameStats.Reset(); // Reset stats
+                    InitialiseGameScreen(); // Reset game objects
+                    _restartButton.IsPressed = false; // Reset the pressed state
+                    _activeScreen = ScreenConditions.Game; // Transition back to the Game screen
+                }
+
+            }
             if (_activeScreen == ScreenConditions.OptionsMenu)
             {
 				IsMouseVisible = true;
@@ -228,36 +245,34 @@ namespace GameDevFinalProj
                 _player.Draw(_spriteBatch);
                 _enemy.Draw(_spriteBatch);
                 _pickups.Draw(_spriteBatch);
-                _spriteBatch.DrawString(_font, $"Score: {score}", new Microsoft.Xna.Framework.Vector2(10, 10), Color.White);
+                postGameStats.Draw(_spriteBatch, new Microsoft.Xna.Framework.Vector2(10, 0), new Microsoft.Xna.Framework.Vector2(10, 40), Microsoft.Xna.Framework.Vector2.Zero);
 
-
-                _spriteBatch.End();
-
-           
-               
+                _spriteBatch.End();              
 
             }
 			if (_activeScreen == ScreenConditions.EndGameMenu)
 			{
-				GraphicsDevice.Clear(Color.Transparent);
+                GraphicsDevice.Clear(Color.Transparent);
 
-				_spriteBatch.Begin();
+                _spriteBatch.Begin();
 
-				_map.Draw(_spriteBatch); // ?
+                // Draw background or map if necessary
+                _map.Draw(_spriteBatch);
 
-				_restartButton.Draw(screenWidth, screenHeight, _spriteBatch);
+                // Draw UI buttons
+                _restartButton.Draw(screenWidth, screenHeight, _spriteBatch);
                 _exitButton.Draw(screenWidth, screenHeight, _spriteBatch);
 
-				//Texture2D i = _img[3]; // _img[_i]
-				//System.Numerics.Vector2 pos = new System.Numerics.Vector2(
-				//    (GraphicsDevice.Viewport.Width - 626) / 2,
-				//    (GraphicsDevice.Viewport.Height - 212) / 2
-				//);
+                // Display final game stats
+                postGameStats.Draw(
+                    _spriteBatch,
+                    new Microsoft.Xna.Framework.Vector2(screenWidth / 2 - 215, 130), // Timer position
+                    new Microsoft.Xna.Framework.Vector2(screenWidth / 2 - 145, 70), // Score position
+                    new Microsoft.Xna.Framework.Vector2(screenWidth / 2 - 115, 10) // Game over message position
+                );
 
-				//_spriteBatch.Draw(i, new Rectangle((int)pos.X, (int)pos.Y, 626, 212), Color.White);
-
-				_spriteBatch.End();
-			}
+                _spriteBatch.End();
+            }
 			if (_activeScreen == ScreenConditions.OptionsMenu)
 			{
 				GraphicsDevice.Clear(Color.Transparent);

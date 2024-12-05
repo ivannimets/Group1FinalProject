@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin 8bit_bomb_explosion.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:8bit_bomb_explosion.wav
+
 #begin Back Button Hover.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -228,6 +234,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Img.png
+
+#begin losetrumpet.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:losetrumpet.wav
 
 #begin Options Button Hover.png
 /importer:TextureImporter

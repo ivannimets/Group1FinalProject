@@ -11,7 +11,8 @@ namespace GameDevFinalProj.Screens.EndGameMenu
 {
 	internal class RestartButton : Button
 	{
-		public RestartButton(Game1 parent)
+        public bool IsPressed { get; set; } // Property to track if the button was pressed
+        public RestartButton(Game1 parent)
 		{
 			_texture = parent.Content.Load<Texture2D>("Restart Button");
 			_textureHovered = parent.Content.Load<Texture2D>("Restart Button Hover");
@@ -32,7 +33,8 @@ namespace GameDevFinalProj.Screens.EndGameMenu
 					parent._activeScreen = ScreenConditions.Game;
 					parent.IsMouseVisible = false;
 					parent.InitialiseGameScreen();
-					parent.leftMouseButtonPressed = true;
+                    IsPressed = true;
+                    parent.leftMouseButtonPressed = true;
 				}
 			}
 			else
