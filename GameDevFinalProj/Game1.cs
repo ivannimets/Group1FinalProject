@@ -19,6 +19,11 @@ namespace GameDevFinalProj
 
         public bool leftMouseButtonPressed;
 
+        int Frame;
+
+        
+
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Map _map;
@@ -117,6 +122,9 @@ namespace GameDevFinalProj
             _img[3] = Content.Load<Texture2D>("Img");
 
             _i = _rnd.Next(_img.Length);
+
+        
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -209,7 +217,14 @@ namespace GameDevFinalProj
                 _player.Draw(_spriteBatch);
                 _enemy.Draw(_spriteBatch);
                 _pickups.Draw(_spriteBatch);
+
+               
+
                 _spriteBatch.End();
+
+           
+               
+
             }
 			if (_activeScreen == ScreenConditions.EndGameMenu)
 			{
@@ -283,8 +298,8 @@ namespace GameDevFinalProj
         public void InitialiseGameScreen()
         {
 
-			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice); // Center
-			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice);
+			_player = new Player(new Point(cols / 2, rows / 2), size, cols, rows, GraphicsDevice, this); // Center
+			_enemy = new Enemy(new Point(0, 0), size, cols, rows, GraphicsDevice, this);
 			_pickups = new Pickups(cols, rows, size, GraphicsDevice);
 		}
 	}
