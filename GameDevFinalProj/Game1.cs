@@ -19,6 +19,33 @@ namespace GameDevFinalProj
 
         public bool leftMouseButtonPressed;
 
+        int Frame;
+
+        Texture2D PlayerUp1Sprite;
+        Texture2D PlayerUp2Sprite;
+
+        Texture2D PlayerDown1Sprite;
+        Texture2D PlayerDown2Sprite;
+
+        Texture2D PlayerLeft1Sprite;
+        Texture2D PlayerLeft2Sprite;
+
+        Texture2D PlayerRight1Sprite;
+        Texture2D PlayerRight2Sprite;
+
+        Texture2D EnemyUp1Sprite;
+        Texture2D EnemyUp2Sprite;
+
+        Texture2D EnemyDown1Sprite;
+        Texture2D EnemyDown2Sprite;
+
+        Texture2D EnemyLeft1Sprite;
+        Texture2D EnemyLeft2Sprite;
+
+        Texture2D EnemyRight1Sprite;
+        Texture2D EnemyRight2Sprite;
+
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Map _map;
@@ -210,6 +237,36 @@ namespace GameDevFinalProj
                 _enemy.Draw(_spriteBatch);
                 _pickups.Draw(_spriteBatch);
                 _spriteBatch.End();
+
+                if (_player.Frame == 0)
+                {
+                    if (_player.Direction == 0)
+                    {
+                        _spriteBatch.Draw(PlayerUp1Sprite, new System.Numerics.Vector2(_player.position.X, _player.position.Y), Color.White);
+                    }
+
+                    if (_player.Direction == 1)
+                    {
+
+                    }
+
+                    if (_player.Direction == 2)
+                    {
+
+                    }
+
+                    if (_player.Direction == 3)
+                    {
+
+                    }
+
+                }
+
+                if (_player.Frame == 1)
+                {
+
+                }
+
             }
 			if (_activeScreen == ScreenConditions.EndGameMenu)
 			{
