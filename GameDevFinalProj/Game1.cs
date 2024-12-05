@@ -9,6 +9,7 @@ using GameDevFinalProj.Screens.StartGameMenu;
 using GameDevFinalProj.Screens.EndGameMenu;
 using GameDevFinalProj.Screens.PauseGameScreen;
 using GameDevFinalProj.Screens.OptionsScreen;
+using System.Collections.Generic;
 
 namespace GameDevFinalProj
 {
@@ -53,14 +54,6 @@ namespace GameDevFinalProj
         private BackButton _backButton;
         private SoundButton _soundButton;
 
-
-
-
-
-
-
-
-
         public Game1(int? idk = null) // Seed
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -76,11 +69,14 @@ namespace GameDevFinalProj
 			// Screen
 			screenWidth = 960;
 			screenHeight = 540;
-			cols = 20;
-			rows = 11;
-			size = screenWidth / cols;
+            size = 48;
+            cols = screenWidth / size;
+			rows = screenHeight / size;
 
-			_graphics.PreferredBackBufferWidth = screenWidth;
+            if (cols % 2 == 0) cols -= 1;
+            if (rows % 2 == 0) rows -= 1;
+
+            _graphics.PreferredBackBufferWidth = size * cols;
             _graphics.PreferredBackBufferHeight = size * rows;
             _graphics.ApplyChanges();
 
@@ -132,7 +128,7 @@ namespace GameDevFinalProj
                 _optionsButton.Update(this);
                 _exitButton.Update(this);
 			}
-            if (_activeScreen == ScreenConditions.Game)
+            else if (_activeScreen == ScreenConditions.Game)
 			{
 				if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 {
@@ -143,13 +139,17 @@ namespace GameDevFinalProj
 
 				_player.Update();
 				_enemy.Update(_player.GetPosition(), gameTime);
+
 				if (GameState.CheckForCollision(_player.GetPosition(), _enemy.GetPosition()))
 				{
 					// GameOver(); IMPLEMENT THIS
 					leftMouseButtonPressed = false;
                     _activeScreen = ScreenConditions.EndGameMenu;
 				}
-			}
+
+                // Player & Pickup Collision
+                _pickups.CheckCollision(_player, new List<Enemy> { _enemy }, cols, rows);
+            }
 			if (_activeScreen == ScreenConditions.PauseMenu)
 			{
 				IsMouseVisible = true;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using static System.Collections.Specialized.BitVector32;
 
 namespace GameDevFinalProj.Screens.Game
@@ -12,21 +13,33 @@ namespace GameDevFinalProj.Screens.Game
 		private bool direction = true; //this flips the x and y direction for the enemy movement
 		private float elapsedTime;
 		private float moveDelay = 0.5f;
-		public Enemy(Point start, int tSize, int tCols, int tRows, GraphicsDevice graphics)
+        private Random random; // NEW Spawn(s)
+
+        // FOR Powerup
+        public bool IsAlive { get; set; } = true;
+
+        public Enemy(Point start, int tSize, int tCols, int tRows, GraphicsDevice graphics)
 		{
 			position = start;
 			size = tSize;
 			cols = tCols;
 			rows = tRows;
+            random = new Random();
 
-			texture = new Texture2D(graphics, 1, 1);
-			texture.SetData(new[] { Color.Black });
+            texture = new Texture2D(graphics, 1, 1);
+			texture.SetData(new[] { Color.Black }); // ?
 		}
 
 		public void Update(Point playerPosition, GameTime gameTime)
 		{
-			// Update elapsed time
-			elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+			if (!IsAlive)
+			{
+                Respawn(playerPosition); // Respawn IF NOT Alive & Check Player's Position FOR Respawnin'
+                return;
+			}
+
+            // Update elapsed time
+            elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 			if (elapsedTime >= moveDelay)
 			{
@@ -47,14 +60,48 @@ namespace GameDevFinalProj.Screens.Game
 				direction = true;
 			}
 		}
+
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			Rectangle rectangle = new Rectangle(position.X * size, position.Y * size, size, size);
-			spriteBatch.Draw(texture, rectangle, new Color(0, 0, 0)); // ?
-		}
+            if (IsAlive)
+            {
+                Rectangle rectangle = new Rectangle(position.X * size, position.Y * size, size, size);
+                spriteBatch.Draw(texture, rectangle, Color.Black); // ?
+            }
+        }
+
 		public Point GetPosition()
 		{
 			return position;
 		}
-	}
+
+        private void Respawn(Point playerPosition)
+        {
+            Point newPosition;
+            do
+            {
+                // Spawn ONLY ON "Edge"
+                if (random.Next(2) == 0) // Horizontal
+                {
+                    newPosition = new Point(random.Next(0, cols), random.Next(2) == 0 ? 0 : rows - 1);
+                }
+                else // Vertical
+                {
+                    newPosition = new Point(random.Next(2) == 0 ? 0 : cols - 1, random.Next(0, rows));
+                }
+            }
+            while (EazyE(newPosition, playerPosition));
+
+            position = newPosition;
+            IsAlive = true; // Respawn
+        }
+
+		// SO Enemy CAN'T Spawn ON Player
+        private bool EazyE(Point enemyPosition, Point playerPosition)
+        {
+            int x = Math.Abs(enemyPosition.X - playerPosition.X);
+            int y = Math.Abs(enemyPosition.Y - playerPosition.Y);
+            return x <= 5 && y <= 5; // Check IF Within 5 Tile(s)
+        }
+    }
 }
