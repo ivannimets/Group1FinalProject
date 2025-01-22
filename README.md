@@ -27,7 +27,7 @@ To play **Pixal**, follow these steps:
 1. Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/vs/).
 2. Clone the repository to your computer:
    ```bash
-   git clone https://github.com/your-username/pixal-game.git
+   git clone https://github.com/ivannimets/Pixal-Game.git
 3. Open the project in Visual Studio:
   * Launch Visual Studio 2022.
   * Select "Open Project/Solution" and locate the .sln file.
